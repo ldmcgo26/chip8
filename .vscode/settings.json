@@ -68,5 +68,6 @@
         "memory": "cpp",
         "type_traits": "cpp",
         "algorithm": "cpp"
-    }
+    },
+    "C_Cpp.errorSquiggles": "disabled"
 }
