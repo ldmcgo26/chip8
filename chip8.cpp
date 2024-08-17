@@ -1,5 +1,6 @@
 #include "chip8.h"
 #include <fstream>
+#include <iostream>
 
 const unsigned int START_ADDRESS = 0x200;
 // placed in "reserved" memory, common convention to put fonts at 0x50
@@ -195,11 +196,14 @@ void Chip8::DecodeNibble(uint16_t const opcode)
 					// get the bit of the sprite in memory at this corresponding column position
 					uint8_t sprite_bit = sprite_byte & (1 << (7 - col));
 					
-					// if both the byte and the bit are on, turn this pixel off and set Vf to 1
-					if (sprite_bit && screen_byte == 0xffffffff)
+					// XOR sprite with sprite bit's corresponding hex value
+					if (sprite_bit)
 					{
-						registers[0xF] = 1;
-						screen_byte = 0x00000000;
+						screen_byte ^= 0xffffffff;
+					}
+					else 
+					{
+						screen_byte ^= 0x00000000;
 					}
 				}
 			}
@@ -315,7 +319,8 @@ void Chip8::Decode_8(uint16_t const opcode)
 				registers[0xF] = 0;
 			}
 
-			registers[Vx] -= registers[Vy];}
+			registers[Vx] -= registers[Vy];
+			break;}
 
 		// 8xy6 - SHR Vx {, Vy}
 		// Set Vx = Vx SHR 1.

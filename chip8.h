@@ -16,8 +16,6 @@ public:
     void Decode_8(uint16_t opcode);
     void Decode_E(uint16_t opcode);
     void Decode_F(uint16_t opcode);
-
-private:
     uint8_t registers[16];
     uint8_t memory[4096];
     uint16_t index;

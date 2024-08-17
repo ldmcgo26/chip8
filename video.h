@@ -1,5 +1,5 @@
-#ifndef CHIP8_H
-#define CHIP8_H
+#ifndef VIDEO_H
+#define VIDEO_H
 
 #include <SDL2/SDL.h>
 
@@ -15,9 +15,9 @@ public:
 	bool ProcessInput(uint8_t* keys);
 
 private:
-	SDL_Window* window{};
-	SDL_Renderer* renderer{};
-	SDL_Texture* texture{};
+	SDL_Window* window;
+	SDL_Renderer* renderer;
+	SDL_Texture* texture;
 };
 
 #endif
