@@ -1,6 +1,5 @@
 #include "chip8.h"
 #include <fstream>
-#include <iostream>
 
 const unsigned int START_ADDRESS = 0x200;
 // placed in "reserved" memory, common convention to put fonts at 0x50
@@ -155,10 +154,7 @@ void Chip8::DecodeNibble(uint16_t const opcode)
 		// Cxkk - RND Vx, byte
 		// Set Vx = random byte AND kk.
 		case 0xc:
-			{// Seed the random number generator with the current time
-			std::srand(std::time(0));
-
-			// Generate a random number between 0 and 255
+			{// Generate a random number between 0 and 255
 			u_int8_t randomNumber = std::rand() % 256;
 
 			uint8_t Vx = (opcode & 0x0F00u) >> 8u;
@@ -197,6 +193,10 @@ void Chip8::DecodeNibble(uint16_t const opcode)
 					uint8_t sprite_bit = sprite_byte & (1 << (7 - col));
 					
 					// XOR sprite with sprite bit's corresponding hex value
+					if (sprite_bit && screen_byte == 0xffffffff)
+					{
+						registers[0xF] = 1;
+					}
 					if (sprite_bit)
 					{
 						screen_byte ^= 0xffffffff;
@@ -417,72 +417,17 @@ void Chip8::Decode_E(uint16_t const opcode)
 		case 0x0a:
 			{uint8_t Vx = (opcode & 0x0F00u) >> 8u;
 
-			if (keypad[0])
-			{
-				registers[Vx] = 0;
+			bool key_pressed = false;
+
+			for (int i = 0; i < 16; i++) {
+				if (keypad[i] != false) {
+					registers[Vx] = i;
+					key_pressed = true;
+					break;
+				}
 			}
-			else if (keypad[1])
-			{
-				registers[Vx] = 1;
-			}
-			else if (keypad[2])
-			{
-				registers[Vx] = 2;
-			}
-			else if (keypad[3])
-			{
-				registers[Vx] = 3;
-			}
-			else if (keypad[4])
-			{
-				registers[Vx] = 4;
-			}
-			else if (keypad[5])
-			{
-				registers[Vx] = 5;
-			}
-			else if (keypad[6])
-			{
-				registers[Vx] = 6;
-			}
-			else if (keypad[7])
-			{
-				registers[Vx] = 7;
-			}
-			else if (keypad[8])
-			{
-				registers[Vx] = 8;
-			}
-			else if (keypad[9])
-			{
-				registers[Vx] = 9;
-			}
-			else if (keypad[10])
-			{
-				registers[Vx] = 10;
-			}
-			else if (keypad[11])
-			{
-				registers[Vx] = 11;
-			}
-			else if (keypad[12])
-			{
-				registers[Vx] = 12;
-			}
-			else if (keypad[13])
-			{
-				registers[Vx] = 13;
-			}
-			else if (keypad[14])
-			{
-				registers[Vx] = 14;
-			}
-			else if (keypad[15])
-			{
-				registers[Vx] = 15;
-			}
-			else
-			{
+
+			if (!key_pressed) {
 				pc -= 2;
 			}
 			break;}
@@ -623,4 +568,7 @@ Chip8::Chip8()
 	{
 		memory[FONTSET_START_ADDRESS + i] = fontset[i];
 	}
+
+	// Seed the random number generator with the current time
+	std::srand(std::time(0));
 }
